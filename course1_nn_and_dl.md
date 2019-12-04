@@ -36,3 +36,25 @@ ex: cat / non cat
     - $w := w - \alpha\frac{\partial J(w,b)}{\partial w}$
     - $b := b - \alpha\frac{\partial J(w,b)}{\partial b}$
   - $J(w,b)$は凸関数なのでパラメータの初期値を何に指定してもグローバル局所解に至る。そのため初期値は 0 にすることが多い
+
+```py
+# pythonっぽい擬似コード
+J = dw1 = dw2 = db = 0
+for i in range(1, m):
+  z[i] = w.T * x[i] + b
+  a[i] = sigmoid(z[i])
+  J += - ( y[i] * log(a[i]) + (1 - y[i] * log(1 - a[i])))
+  dz[i] = a[i] - y[i]
+
+  dw1 += x1[i] * dz[i]
+  dw2 += x2[i] * dz[i]
+  db += dz[i]
+
+J /= m
+dw1 /= m
+dw2 /= m
+
+w1 = w1 - alpha * dw1
+w2 = w2 - alpha * dw2
+b = b - alpha * db
+```
