@@ -58,3 +58,41 @@ w1 = w1 - alpha * dw1
 w2 = w2 - alpha * dw2
 b = b - alpha * db
 ```
+
+#### Vectorize(1)
+
+```py
+J = db = 0
+dw = np.zeros((n,1))
+
+for i in range(1, m):
+  z[i] = w[i] @ x[i] + b  # w.T * x + b
+  a[i] = sigmoid(z[i])
+  J += - ( y[i] * log(a[i]) + (1 - y[i] * log(1 - a[i])))
+  dz[i] = a[i] - y[i]
+  dw += x[i] * dz[i]
+  db += dz[i]
+
+J /= m
+dw /= m
+```
+
+#### Vectorize(2)
+
+```py
+J = db = 0
+dw = np.zeros((n, 1)) # (n, 1)
+
+z = w.T @ x + b  # (1, n)@(n, m) = (1, m)
+a = sigmoid(z)  # (1, m)
+dz = a - y  # (1, m)
+
+dw = (X @ dz.T) / m  # (n, m)@(m, 1) = (n, 1)
+db = dz.sum() / m  # (1, m) -> (1)
+
+w -= alpha * dw
+b -= alpha * db
+
+j += - ( y * log(a) + (1 - y * log(1 - a)))  # (1, m)
+J = j.sum() / m  # (1, m) -> (1)
+```
