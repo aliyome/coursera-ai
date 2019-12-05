@@ -96,3 +96,25 @@ b -= alpha * db
 j += - ( y * log(a) + (1 - y * log(1 - a)))  # (1, m)
 J = j.sum() / m  # (1, m) -> (1)
 ```
+
+### memo
+
+ndarray.reshape()は定数時間で処理するのでどんどん使っていい
+
+### Logistic Regression Cost function
+
+If $y = 1: p(y|x) = \hat{y}$
+If $y = 0: p(y|x) = 1 - \hat{y}$
+
+$p(y|x) = \hat{y}^y(1-\hat{y})^{(1-y)}$
+$\log p(y|x) = \log \hat{y}^y(1-\hat{y})^{(1-y)}$
+$ \qquad = y\log\hat{y} + (1-y)\log(1-\hat{y})$
+
+$p(\text{labels in train set}) = \prod_{i=1}^m p(y^{(i)}|x^{(i)})$
+$\log p(\text{labels in train set}) = \log \prod_{i=1}^m p(y^{(i)}|x^{(i)})$
+$\qquad = \sum_{i=1}^m \log p(y^{(i)}|x^{(i)})$
+$\qquad = -\sum_{i=1}^m L(\hat{y}^{(i)}, y^{(i)})$
+$Cost: J(w, b) = 1/m \sum_{i=1}^m L(\hat{y}^{(i)}, y^{(i)}) $
+
+んー、ちょっとよくわからないですね
+最尤なんとかが関係してるらしい
