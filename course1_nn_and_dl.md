@@ -118,3 +118,51 @@ $Cost: J(w, b) = 1/m \sum_{i=1}^m L(\hat{y}^{(i)}, y^{(i)}) $
 
 んー、ちょっとよくわからないですね
 最尤なんとかが関係してるらしい
+
+### NN
+
+$x \in R^{3 \times m} \to a^{[1]} \in R^{4 \times m}$
+$W^{[1]} \in R^{4 \times 3}, b^{[1]} \in R^{4 \times 1}$
+
+$z^{[1]} = W^{[1]}x + b^{[1]}$
+$a^{[1]} = \sigma(z^{[1]})$
+
+$z^{[2]} = W^{[2]}a^{[1]} + b^{[2]}$
+$a^{[2]} = \sigma(z^{[2]})$
+
+### Gradient descent for NN
+
+Parameters:
+$ \quad w^{[1]} \in R^{n1,n0},b^{[1]} \in R^{n1,1},w^{[2]} \in R^{n2,n1},b^{[2]} \in R^{n2,1}$
+
+Cost function:
+$\quad J(w^{[1]}, b^{[1]}, w^{[2]},b^{[2]} = \frac{1}{m} \sum_{i=1}^m L(\hat{y}, y)$
+
+Gradient descent:
+$\quad Repeat \{$
+$\qquad dw^{[1]} = \frac{\partial J}{\partial dw^{[1]}}$
+$\qquad db^{[1]} = \frac{\partial J}{\partial db^{[1]}}$
+...
+$\qquad w^{[1]} := w^{[1]} - \alpha  dw^{[1]}$
+$\qquad b^{[1]} := b^{[1]} - \alpha  db^{[1]}$
+...
+$\quad\}$
+
+### Forward and Backward prop
+
+Forward
+$z^{[1]} = w^{[1]}x + b^{[1]}$
+$a^{[1]} = g^{[1]}(z^{[1]})$
+$z^{[2]} = w^{[2]}a^{[1]} + b^{[2]}$
+$a^{[2]} = g^{[2]}(z^{[2]})$
+
+---
+
+Backward
+
+$dz^{[2]} = a^{[2]} - y$
+$dw^{[2]} = \frac{1}{m}dz^{[2]}a^{[1]T}$
+$db^{[2]} = \frac{1}{m} \text{np.sum}(dz^{[2]}, axis=1, keepdims=True)$ # (n, 1) by keepdims
+$dz^{[1]} = w^{[2]T}dz^{[2]} * g^{[1]'(z^{[1]})}$
+$dw^{[1]} = \frac{1}{m}dz^{[1]}x^T$
+$db^{[1]} = \frac{1}{m}\text{np.sum}(dz^{[1]}, axis=1, keepdims=True)$
