@@ -150,15 +150,14 @@ $\quad\}$
 
 ### Forward and Backward prop
 
-Forward
+#### Forward
+
 $z^{[1]} = w^{[1]}x + b^{[1]}$
 $a^{[1]} = g^{[1]}(z^{[1]})$
 $z^{[2]} = w^{[2]}a^{[1]} + b^{[2]}$
 $a^{[2]} = g^{[2]}(z^{[2]})$
 
----
-
-Backward
+#### Backward
 
 $dz^{[2]} = a^{[2]} - y$
 $dw^{[2]} = \frac{1}{m}dz^{[2]}a^{[1]T}$
@@ -166,3 +165,20 @@ $db^{[2]} = \frac{1}{m} \text{np.sum}(dz^{[2]}, axis=1, keepdims=True)$ # (n, 1)
 $dz^{[1]} = w^{[2]T}dz^{[2]} * g^{[1]'(z^{[1]})}$
 $dw^{[1]} = \frac{1}{m}dz^{[1]}x^T$
 $db^{[1]} = \frac{1}{m}\text{np.sum}(dz^{[1]}, axis=1, keepdims=True)$
+
+#### diagram
+
+mermaid で図を描いてみたけどダメだこりゃ。
+この図を見ずに OneNote の図を見ること。
+
+```mermaid
+graph LR;
+
+X -- a0 --> F1[w1,b1_] -- a1 --> F2[w2,b2_] -- a2 --> F3[w3,b3_] -- a3 --> y;
+
+F1 -- z1 --> B1 --> P1[dw1, db1_];
+F2 -- z2 --> B2 --> P2[dw2, db2_];
+F3 -- z3 --> B3 --> P3[dw3, db3_];
+
+y -- da3 --> B3[w1,b1_] -- da2 --> B2[w2,b2_] -- da1 --> B1[w3,b3_];
+```
