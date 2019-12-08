@@ -111,3 +111,57 @@ Mini-batch で M 分割したあと、そのうちの一つだけを計算する
 - m > 2000 なら 64, 128, 256, 512 くらいのミニバッチ
   - ハイパーパラメータなので試すしかない
 - X, Y のサンプル数は CPU/GPU メモリに依存する
+
+## Moving Average
+
+### EMA
+
+$V_t = \beta V_{t-1} + (1-\beta)\theta_t$
+$\quad \beta = 0.9 \to \approx10 day's ~ average $
+$\quad \beta = 0.98 \to \approx50 day's ~ average $
+$\quad \approx \frac{1}{1-\beta}day's \quad \text{数学的な法則ではないがReasonable}$
+
+$0.9^{10} \approx 0.35 \approx \frac{1}{e}$
+$(1-\epsilon)^{1/\epsilon} \approx \frac{1}{e} \quad | \epsilon = 0.1$
+→ β に 0.9 を採用すると、期間が 10(日)で重みが 1/3 に減少する
+→ β に 0.98 を採用すると、期間が 50(日)で重みが 1/3 に減少する
+
+SMA と比較すると、EMA は最新の値だけ覚えておけば良いため、メモリ効率と計算効率が良い
+
+## Momentum
+
+$V_{dw} = \beta V_{dw} + (1-\beta)dw$
+$V_{db} = \beta V_{db} + (1-\beta)db$
+$w := w - \alpha V_{dw}, b := b - \alpha V_{db}$
+
+EMA で重み付けして Gradient Descent を行う
+$(1-\beta)dw$は加速度みたいなもん
+
+## RMSprop
+
+$S_{dw} = \beta S_{dw} + (1-\beta)dw^2$
+$S_{db} = \beta S_{db} + (1-\beta)db^2$
+$w := w - \alpha \frac{dw}{\sqrt{S_{dw}}}, w := b - \alpha \frac{db}{\sqrt{S_{db}}}$
+
+$w$は水平方向、$b$は垂直方向を示し、$w$よりも$b$の方が値が大きい。その性質を利用して二乗して割ることで垂直方向の影響を抑え、水平方向の影響を強くしている。
+
+## Adam
+
+Momentum + RMSprop な最適化手法
+$V_{dw} = \beta_1V_{dw} + (1-\beta_1)dw$
+$V_{db} = \beta_1V_{db} + (1-\beta_1)db$
+$S_{dw} = \beta_2S_{dw} + (1-\beta_2)dw^2$
+$S_{db} = \beta_2S_{db} + (1-\beta_2)db^2$
+
+$V_{dw}^{corrected} = \frac{V_{dw}}{(1-\beta_1^t)}$
+$V_{db}^{corrected} = \frac{V_{db}}{(1-\beta_1^t)}$
+$S_{dw}^{corrected} = \frac{S_{dw}}{(1-\beta_2^t)}$
+$S_{db}^{corrected} = \frac{S_{db}}{(1-\beta_2^t)}$
+$w := w - \alpha \frac{V_{dw}^{corrected}}{\sqrt{S_{dw}^{corrected}}  + \epsilon}$
+$b := b - \alpha \frac{V_{db}^{corrected}}{\sqrt{S_{db}^{corrected}}  + \epsilon}$
+
+Default Params: (基本的に α のみ調整が必要)
+$\alpha:$ needs to be tune
+$\beta_1: 0.9 \quad (dw)$
+$\beta_2: 0.999 \quad (dw^2)$
+$\epsilon: 10^{-8}$
