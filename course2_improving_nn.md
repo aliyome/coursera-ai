@@ -91,3 +91,23 @@ $w^{[l]} = np.random.randn(shape) * np.sqrt(\frac{2}{n^{[l-1]}})$
 ## Gradient Checking
 
 微分項の確認の為に、微分前の項に $\epsilon$ を足した場合と引いた場合で傾きを得る。Backward propagation で計算した Gradient と比較して解が合っているかを確認する
+
+## Optimize Train speed
+
+### Mini-batch gradient descent
+
+train set を M 分割して cost と grad をそれぞれ計算する
+
+### Stochastic gradient descent
+
+Mini-batch で M 分割したあと、そのうちの一つだけを計算する
+
+- 早いが cost が毎回必ずしも減少するとは限らない
+- 絶対に収束はしない（打ち切りが必要）
+
+### バッチサイズの決め方
+
+- 全体の train set が m < 2000 程度なら Full-Batch
+- m > 2000 なら 64, 128, 256, 512 くらいのミニバッチ
+  - ハイパーパラメータなので試すしかない
+- X, Y のサンプル数は CPU/GPU メモリに依存する
