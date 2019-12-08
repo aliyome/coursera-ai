@@ -165,3 +165,18 @@ $\alpha:$ needs to be tune
 $\beta_1: 0.9 \quad (dw)$
 $\beta_2: 0.999 \quad (dw^2)$
 $\epsilon: 10^{-8}$
+
+## Learning rate decay
+
+$\alpha = \frac{1}{1 + DecayRate * EpochNum}\alpha_0$
+
+Example:
+$\alpha_0 = 0.2$
+$DecayRate = 1$
+
+Epoch1: 0.1, Epoch2: 0.067, Epoch3: 0.05, ...
+
+他にも Rate Decay には色々な種類がある
+
+$\alpha = 0.95^{EpochNum}\alpha_0$
+$\alpha = \frac{k}{\sqrt{EpochNum}}\alpha_0$
