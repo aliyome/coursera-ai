@@ -180,3 +180,79 @@ Epoch1: 0.1, Epoch2: 0.067, Epoch3: 0.05, ...
 
 $\alpha = 0.95^{EpochNum}\alpha_0$
 $\alpha = \frac{k}{\sqrt{EpochNum}}\alpha_0$
+
+## Hyperparameters の優先順位
+
+Top Tier
+
+- α
+
+2nd Tier
+
+- β(~0.9)
+- #hidden units
+- mini-batch size
+
+3rd Tier
+
+- #layers
+- learning rate decay
+
+Hyperparameter のグリッドサーチはあまりり効果的ではない。
+よく効く変数とそうでない変数があるため、ランダムに選んだ方が良い。
+その後絞り込む。
+
+## Hyperparameters の範囲
+
+- 0 - 1 のような範囲の場合はただのランダムで問題ない
+- 0.0001 - 1 のような範囲の場合は、ログスケールでランダムに分布させたほうが良い
+  - $10^{-4} < x < 10^0$みたいに
+
+## Batch Normalization
+
+Feature Scaling では以下の式で特徴空間を正規化することで学習速度を早める事ができた。
+
+$X = \frac{X}{\sigma^2}$
+
+NN の各層で行えば早くなるのでは？という方法
+
+各層の $z$:activation 前の値 を正規化すると良い。activation 後を正規化する議論もあるが、Andrew 先生は z を正規化する
+
+$\mu = \frac{1}{m}\sum_i^mz^{(i)}$
+$\sigma^2 = \frac{1}{m}\sum_i^m(z^{(i)} - \mu)^2$
+$z_{norm}^{(i)} = \frac{z^{(i)} - \mu}{\sqrt{\sigma^2 + \epsilon}}$
+$\tilde{z}^{(i)} = \gamma z_{norm}^{(i)} + \beta$
+$\quad \gamma = \sqrt{\sigma^2 + \epsilon}$
+$\quad \beta = \mu$
+
+$\gamma$ と $\beta$ を任意の値に設定すると、z がどんな分布になるかを決定できる。（平均が 0 にならずに、ガウス分布っぽくなる、とか）
+
+> んー、よくわかんねっす
+
+さらに、$z$の計算に必要なパラメータ$b$は定数項だが、BatchNorm によって定数項はもはや意味がない（平均と分散を Znorm がすでに弄っている）ので不要になる。
+
+さらにさらに、1 層目の出力 a1 の分布も、入力 X がどうなっても一緒なので、2 層目に変な尖った影響が出にくい。2 層目から 3 層目も同じで、各層での学習結果が安定しやすくなる。
+
+加えて、mini-batch で BatchNorm する際、サンプル全体の平均や分散を使わずに mini-batch の平均や分散を使うと、ノイズが含まれるため、dropout のように正則化の効果がある。バッチサイズを大きくすると、ノイズが少なくなるので正則化の効果は弱くなる。ただし BatchNorm は正則化が目的ではないので、そこに期待しないこと。
+
+**テストセット（テストサンプル）に対しては上手く使えない？**
+
+> よくわかんね
+
+## Softmax activation
+
+マルチクラス分類で使われる
+出力層の各ノードの合計が 1 になる
+
+$t = e^{Z^{[L]}}$
+$a^{[L]} = \frac{e^{Z^{[L]}}}{\sum_{i=1}^{n_L}t_i}:shape(n_L, 1)$
+
+Loss function
+
+$L(\hat{y}, y) = - \sum_{j=1}^n y_j \log \hat y_j$
+
+Backprop
+
+$dz^{[L]} = \hat y - y$
+
+## TensorFlow
